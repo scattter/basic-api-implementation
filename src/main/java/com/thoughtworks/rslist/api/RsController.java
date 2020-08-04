@@ -9,15 +9,18 @@ import java.util.List;
 
 @RestController
 public class RsController {
-  private List<String> rsList = Arrays.asList("第一条事件", "第二条事件", "第三条事件");
+    private List<String> rsList = Arrays.asList("第一条事件", "第二条事件", "第三条事件");
 
-  @GetMapping("/rs/list")
-  public String getRsList(){
-    return rsList.toString();
-  }
+    @GetMapping("/rs/{index}")
+    public String getOneRsEvent(@PathVariable int index) {
+        return rsList.get(index - 1);
+    }
 
-  @GetMapping("/rs/{index}")
-  public String getOneRsEvent(@PathVariable int index){
-    return rsList.get(index - 1);
-  }
+    @GetMapping("/rs/list")
+    public String getRsEventBetween(Integer start, Integer end) {
+        if (start == null || end == null) {
+            return rsList.toString();
+        }
+        return rsList.subList(start - 1, end).toString();
+    }
 }
