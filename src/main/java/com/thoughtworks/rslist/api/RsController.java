@@ -1,14 +1,9 @@
 package com.thoughtworks.rslist.api;
 
-<<<<<<< HEAD
 import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.User;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-=======
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
->>>>>>> master
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -16,7 +11,6 @@ import java.util.List;
 
 @RestController
 public class RsController {
-<<<<<<< HEAD
 
     private List<RsEvent> rsList = initRsEvent();
 
@@ -90,12 +84,4 @@ public class RsController {
     public void deleteOneRsEvent(@PathVariable int index) {
         rsList.remove(index - 1);
     }
-=======
-  private List<String> rsList = Arrays.asList("第一条事件", "第二条事件", "第三条事件");
-
-  @GetMapping("/rs/list")
-  public String getRsList(){
-      return rsList.toString();
-  }
->>>>>>> master
 }

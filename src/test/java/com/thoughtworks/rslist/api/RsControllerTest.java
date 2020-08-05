@@ -1,6 +1,5 @@
 package com.thoughtworks.rslist.api;
 
-<<<<<<< HEAD
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.RsEvent;
@@ -23,7 +22,7 @@ import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-=======
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
@@ -35,7 +34,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.junit.jupiter.api.Assertions.*;
->>>>>>> master
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -44,7 +42,6 @@ class RsControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-<<<<<<< HEAD
     @BeforeEach
     void setup(){
         mockMvc = MockMvcBuilders.standaloneSetup(new RsController()).build();
@@ -250,13 +247,4 @@ class RsControllerTest {
                 .andExpect(jsonPath("$[2].eventKeyword", is("无分类")))
                 .andExpect(status().isOk());
     }
-=======
-    @Test
-    void shouldGetRsList() throws Exception {
-        mockMvc.perform(get("/rs/list"))
-                .andExpect(content().string("[第一条事件, 第二条事件, 第三条事件]"))
-        .andExpect(status().isOk());
-    }
-
->>>>>>> master
 }
