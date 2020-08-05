@@ -1,5 +1,3 @@
-### 作业描述
-
 #### 重复课堂上的Demo完成练习
 * 给所有接口添加错误处理：
     1. get /rs/list时对start和end进行校验，如果超出范围则返回 400 {error:"invalid request param"}
@@ -10,5 +8,5 @@
        在我们的exceptionHandler中添加日志，记录下错误的信息（error级别），运行程序试着观察是否有日志打印
 * 先写测试（除了日志）！
 
-<span style="color: red"> 注意：最终需要将改动合并到master分支 </span> 
+
 
