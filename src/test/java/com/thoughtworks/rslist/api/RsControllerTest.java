@@ -86,27 +86,6 @@ class RsControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void shouldAddRsEventWhenUserExists() throws Exception {
-        UserEntity userEntity = userRepository.save(UserEntity.builder().age(20).name("小张").gender("male")
-                .email("1@a.com").phone("13423433411").vote(10).build());
-        String requestJson = "{\"eventName\":\"第四个事件\",\"eventKeyword\":\"添加事件\",\"userId\":" + userEntity.getId() + "}";
-        mockMvc.perform(post("/rs/event").content(requestJson)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-        List<RsEventEntity> rsEventEntity = rsEventRepository.findAll();
-        assertEquals(1, rsEventEntity.size());
-        assertEquals("第四个事件", rsEventEntity.get(0).getEventName());
-        assertEquals(userEntity.getId(), rsEventEntity.get(0).getUserId());
-    }
-
-    @Test
-    void shouldNotAddRsEventWhenUserNotExists() throws Exception {
-        String requestJson = "{\"eventName\":\"第四个事件\",\"eventKeyword\":\"添加事件\",\"userId\":100}";
-        mockMvc.perform(post("/rs/event").content(requestJson)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
 
     @Test
     void shouldModifyRsEventName() throws Exception {
@@ -180,6 +159,8 @@ class RsControllerTest {
                 .andExpect(jsonPath("$[1].eventKeyword", is("无分类")))
                 .andExpect(status().isOk());
     }
+
+
 
     @Test
     void shouldNotAddRsEventWhenEventNameIsNull() throws Exception {
