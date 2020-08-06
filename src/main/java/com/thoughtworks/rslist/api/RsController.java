@@ -6,6 +6,7 @@ import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.exception.CommenError;
 import com.thoughtworks.rslist.exception.InvalidRequestParamException;
 import com.thoughtworks.rslist.exception.InvlidIndexException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,7 +17,10 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
+import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
+
 @RestController
+@Slf4j
 public class RsController {
 
     private List<RsEvent> rsList = initRsEvent();
@@ -33,13 +37,14 @@ public class RsController {
     @GetMapping("/rs/{index}")  //
     public ResponseEntity<RsEvent> getOneRsEvent(@PathVariable Integer index) throws InvlidIndexException {
 
-        if (index > rsList.size()){
+        if (index > rsList.size()) {
             throw new InvlidIndexException("invalid index");
         }
         return ResponseEntity.ok(rsList.get(index - 1));
     }
 
     @GetMapping("/rs/list")
+    //@JsonView(RsEvent.PublicView.class)
     public ResponseEntity<List<RsEvent>> getRsEventBetween(@RequestParam(required = false) Integer start,
                                                            @RequestParam(required = false) Integer end) throws InvalidRequestParamException {
         if (start == null || end == null) {
@@ -106,23 +111,21 @@ public class RsController {
         return ResponseEntity.ok(null);
     }
 
-    @ExceptionHandler({InvlidIndexException.class,MethodArgumentNotValidException.class})
-    public ResponseEntity exceptionHandler(Exception error){
+    @ExceptionHandler({InvlidIndexException.class,
+            MethodArgumentNotValidException.class,
+            InvalidRequestParamException.class})
+    public ResponseEntity exceptionHandler(Exception error) {
         String message;
         CommenError commenError = new CommenError();
-        if (error instanceof MethodArgumentNotValidException){
+
+        log.error("{}.error :  {}", error.getClass(), error.getMessage());
+        if (error instanceof MethodArgumentNotValidException) {
             message = "invalid param";
-        }else {
-            message = "invalid index";
+        } else {
+            message = error.getMessage();
         }
         commenError.setError(message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commenError);
     }
 
-    @ExceptionHandler(InvalidRequestParamException.class)
-    public ResponseEntity exceptionHandler(InvalidRequestParamException error){
-        CommenError commenError = new CommenError();
-        commenError.setError(error.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commenError);
-    }
 }

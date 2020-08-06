@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.validation.constraints.*;
 
+@JsonView(RsEvent.PrivateView.class)
 public class User {
     public String getName() {
         return name;

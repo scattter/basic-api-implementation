@@ -10,16 +10,19 @@ import javax.validation.constraints.NotNull;
 
 public class RsEvent {
 
-    //public interface PublicView{}
-    //public interface PrivateView extends PublicView{}
+    public interface PublicView{}
+    public interface PrivateView extends PublicView{}
 
     @NotNull
+    //@JsonView(PublicView.class)
     private String eventName;
 
     @NotNull
+    //@JsonView(PublicView.class)
     private String eventKeyword;
 
     @NotNull
+    //@JsonView(PrivateView.class)
     private User eventUser;
 
     @JsonIgnore

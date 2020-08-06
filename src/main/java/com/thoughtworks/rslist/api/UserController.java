@@ -27,7 +27,6 @@ public class UserController {
             userNames.add(userName);
             users.add(user);
         }
-        users.add(user);
         Integer index = users.size();
         return ResponseEntity.created(null).header("index", index.toString()).build();
     }
