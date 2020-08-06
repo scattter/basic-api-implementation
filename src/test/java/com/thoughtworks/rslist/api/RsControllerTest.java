@@ -99,6 +99,8 @@ class RsControllerTest {
         assertEquals("第四个事件", rsEventEntity.get(0).getEventName());
         assertEquals(userEntity.getId(), rsEventEntity.get(0).getUserId());
     }
+    
+
 
     @Test
     void shouldModifyRsEventName() throws Exception {
