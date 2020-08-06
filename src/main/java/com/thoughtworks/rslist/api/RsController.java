@@ -7,6 +7,7 @@ import com.thoughtworks.rslist.exception.CommenError;
 import com.thoughtworks.rslist.exception.InvalidRequestParamException;
 import com.thoughtworks.rslist.exception.InvlidIndexException;
 import com.thoughtworks.rslist.repository.RsEventRepository;
+import com.thoughtworks.rslist.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +25,11 @@ public class RsController {
 
 
     private final RsEventRepository rsEventRepository;
+    private final UserRepository userRepository;
 
-    public RsController(RsEventRepository rsEventRepository) {
+    public RsController(RsEventRepository rsEventRepository, UserRepository userRepository) {
         this.rsEventRepository = rsEventRepository;
+        this.userRepository = userRepository;
     }
 
 
@@ -67,6 +70,9 @@ public class RsController {
     @PostMapping("/rs/event")
     // @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity addRsEvent(@RequestBody @Valid RsEvent rsEvent) {
+        if (!userRepository.findById(rsEvent.getUserId()).isPresent()){
+            return ResponseEntity.badRequest().build();
+        }
         RsEventEntity rsEventEntity = RsEventEntity.builder().eventName(rsEvent.getEventName())
                 .eventKeyword(rsEvent.getEventKeyword()).userId(rsEvent.getUserId()).build();
         rsEventRepository.save(rsEventEntity);

@@ -43,7 +43,7 @@ class RsControllerTest {
 
     @BeforeEach
     void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(new RsController(rsEventRepository)).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(new RsController(rsEventRepository, userRepository)).build();
     }
 
     @Test
@@ -99,8 +99,14 @@ class RsControllerTest {
         assertEquals("第四个事件", rsEventEntity.get(0).getEventName());
         assertEquals(userEntity.getId(), rsEventEntity.get(0).getUserId());
     }
-    
 
+    @Test
+    void shouldNotAddRsEventWhenUserNotExists() throws Exception {
+        String requestJson = "{\"eventName\":\"第四个事件\",\"eventKeyword\":\"添加事件\",\"userId\":100}";
+        mockMvc.perform(post("/rs/event").content(requestJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 
     @Test
     void shouldModifyRsEventName() throws Exception {
