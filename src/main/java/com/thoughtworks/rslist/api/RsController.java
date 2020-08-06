@@ -3,6 +3,7 @@ package com.thoughtworks.rslist.api;
 import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.entity.RsEventEntity;
+import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.exception.CommenError;
 import com.thoughtworks.rslist.exception.InvalidRequestParamException;
 import com.thoughtworks.rslist.exception.InvlidIndexException;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -70,11 +72,13 @@ public class RsController {
     @PostMapping("/rs/event")
     // @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity addRsEvent(@RequestBody @Valid RsEvent rsEvent) {
-        if (!userRepository.findById(rsEvent.getUserId()).isPresent()){
+        // 此处使用userEntity  替换 81行的 userId(rsEvent.getUserId())
+        Optional<UserEntity> userEntity = userRepository.findById(rsEvent.getUserId());
+        if (!userEntity.isPresent()){
             return ResponseEntity.badRequest().build();
         }
         RsEventEntity rsEventEntity = RsEventEntity.builder().eventName(rsEvent.getEventName())
-                .eventKeyword(rsEvent.getEventKeyword()).userId(rsEvent.getUserId()).build();
+                .eventKeyword(rsEvent.getEventKeyword()).userEntity(userEntity.get()).build();
         rsEventRepository.save(rsEventEntity);
         Integer index = rsList.size();
         return ResponseEntity.ok(null);

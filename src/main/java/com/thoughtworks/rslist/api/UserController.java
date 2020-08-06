@@ -57,10 +57,8 @@ public class UserController {
     }
 
     @DeleteMapping("/user/{id}")
-    @Transactional
     public ResponseEntity deleteUser(@PathVariable Integer id){
         userRepository.deleteById(id);
-        rsEventRepository.deleteAllByUserId(id);
         return ResponseEntity.ok().build();
     }
 }

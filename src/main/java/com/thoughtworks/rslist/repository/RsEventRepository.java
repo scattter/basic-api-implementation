@@ -9,6 +9,7 @@ import java.util.List;
 public interface RsEventRepository extends CrudRepository<RsEventEntity, Integer> {
     List<RsEventEntity> findAll();
 
-    @Transactional
-    void deleteAllByUserId(Integer userId);
+    // 最后数据库级联的时候需要把这里删除  才可以
+    // @Transactional
+    // void deleteAllByUserId(Integer userId);
 }

@@ -22,8 +22,6 @@ public class RsEvent implements Serializable {
     public interface PrivateView extends PublicView {
     }
 
-
-
     @NotNull
     //@JsonView(PublicView.class)
     private String eventName;

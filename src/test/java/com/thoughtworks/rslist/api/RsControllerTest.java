@@ -44,6 +44,8 @@ class RsControllerTest {
     @BeforeEach
     void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(new RsController(rsEventRepository, userRepository)).build();
+        rsEventRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
@@ -60,6 +62,29 @@ class RsControllerTest {
                 .andExpect(jsonPath("$.eventName", is("第三个事件")))
                 .andExpect(jsonPath("$.eventKeyword", is("无分类")))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldAddRsEventWhenUserExists() throws Exception {
+        UserEntity userEntity = userRepository.save(UserEntity.builder().age(20).name("小张").gender("male")
+                .email("1@a.com").phone("13423433411").vote(10).build());
+        String requestJson = "{\"eventName\":\"第四个事件\",\"eventKeyword\":\"添加事件\",\"userId\":" + userEntity.getId() + "}";
+        mockMvc.perform(post("/rs/event").content(requestJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        List<RsEventEntity> rsEventEntity = rsEventRepository.findAll();
+        assertEquals(1, rsEventEntity.size());
+        assertEquals("第四个事件", rsEventEntity.get(0).getEventName());
+        // 此处将getUserId改为getUserEntity().getId()
+        assertEquals(userEntity.getId(), rsEventEntity.get(0).getUserEntity().getId());
+    }
+
+    @Test
+    void shouldNotAddRsEventWhenUserNotExists() throws Exception {
+        String requestJson = "{\"eventName\":\"第四个事件\",\"eventKeyword\":\"添加事件\",\"userId\":100}";
+        mockMvc.perform(post("/rs/event").content(requestJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -159,7 +184,6 @@ class RsControllerTest {
                 .andExpect(jsonPath("$[1].eventKeyword", is("无分类")))
                 .andExpect(status().isOk());
     }
-
 
 
     @Test

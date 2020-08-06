@@ -138,37 +138,18 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.error", org.hamcrest.Matchers.is("invalid user")));
     }
 
-    @Test
-    void shouldAddRsEventWhenUserExists() throws Exception {
-        UserEntity userEntity = userRepository.save(UserEntity.builder().age(20).name("小张").gender("male")
-                .email("1@a.com").phone("13423433411").vote(10).build());
-        String requestJson = "{\"eventName\":\"第四个事件\",\"eventKeyword\":\"添加事件\",\"userId\":" + userEntity.getId() + "}";
-        mockMvc.perform(post("/rs/event").content(requestJson)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-        List<RsEventEntity> rsEventEntity = rsEventRepository.findAll();
-        assertEquals(1, rsEventEntity.size());
-        assertEquals("第四个事件", rsEventEntity.get(0).getEventName());
-        assertEquals(userEntity.getId(), rsEventEntity.get(0).getUserId());
-    }
 
-    @Test
-    void shouldNotAddRsEventWhenUserNotExists() throws Exception {
-        String requestJson = "{\"eventName\":\"第四个事件\",\"eventKeyword\":\"添加事件\",\"userId\":100}";
-        mockMvc.perform(post("/rs/event").content(requestJson)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-    }
-
+    // 这里148行使用userEntity(userEntity_1) 代替userId(userEntity.getUserId())
+    // 因为RsEventEntity里面字段改变了  所以这里的参数也改变了
     @Test
     void shouldDeleteUser() throws Exception {
-        UserEntity userEntity = userRepository.save(UserEntity.builder().age(20).name("小张").gender("male")
+        UserEntity userEntity_1 = userRepository.save(UserEntity.builder().age(20).name("小张").gender("male")
                 .email("1@a.com").phone("13423433411").vote(10).build());
         RsEventEntity rsEventEntity = RsEventEntity.builder().eventName("kkkk")
-                .eventKeyword("sdfsdfsdf").userId(userEntity.getId( )).build();
+                .eventKeyword("sdfsdfsdf").userEntity(userEntity_1).build();
         rsEventRepository.save(rsEventEntity);
 
-        mockMvc.perform(delete("/user/{id}",userEntity.getId()))
+        mockMvc.perform(delete("/user/{id}",userEntity_1.getId()))
                 .andExpect(status().isOk());
         assertEquals(0,rsEventRepository.findAll().size());
         assertEquals(0,userRepository.findAll().size());
