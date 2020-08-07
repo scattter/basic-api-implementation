@@ -74,7 +74,7 @@ public class RsController {
     public ResponseEntity addRsEvent(@RequestBody @Valid RsEvent rsEvent) {
         // 此处使用userEntity  替换 81行的 userId(rsEvent.getUserId())
         Optional<UserEntity> userEntity = userRepository.findById(rsEvent.getUserId());
-        if (!userEntity.isPresent()){
+        if (!userEntity.isPresent()) {
             return ResponseEntity.badRequest().build();
         }
         RsEventEntity rsEventEntity = RsEventEntity.builder().eventName(rsEvent.getEventName())
@@ -82,6 +82,30 @@ public class RsController {
         rsEventRepository.save(rsEventEntity);
         Integer index = rsList.size();
         return ResponseEntity.ok(null);
+    }
+
+    @PostMapping("/rs/update/{rsEventId}")
+    public ResponseEntity updateRsEventWhenUserIdCampareEventId(@PathVariable Integer rsEventId,
+                                                                @RequestBody @Valid RsEvent rsEvent) {
+        Optional<UserEntity> userEntity = userRepository.findById(rsEventId);
+        if (userEntity.isPresent()) {
+            Optional<RsEventEntity> rsEventEntity = rsEventRepository.findById(rsEventId);
+            if (rsEventEntity.isPresent()) {
+                if (!rsEvent.getEventKeyword().isEmpty()){
+                    rsEventEntity.get().setEventKeyword(rsEvent.getEventKeyword());
+                }
+                if (!rsEvent.getEventName().isEmpty()){
+                    rsEventEntity.get().setEventName(rsEvent.getEventName());
+                }
+            } else {
+                rsEventRepository.save(RsEventEntity.builder().eventName(rsEvent.getEventName())
+                        .eventKeyword(rsEvent.getEventKeyword()).userEntity(userEntity.get()).build());
+            }
+            return ResponseEntity.ok(null);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
     }
 
     @PostMapping("/rs/list/modifyName/{index}")

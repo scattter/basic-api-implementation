@@ -81,10 +81,57 @@ class RsControllerTest {
 
     @Test
     void shouldNotAddRsEventWhenUserNotExists() throws Exception {
+
         String requestJson = "{\"eventName\":\"第四个事件\",\"eventKeyword\":\"添加事件\",\"userId\":100}";
         mockMvc.perform(post("/rs/event").content(requestJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldUpdateRsEventWhenUserIdCampareToEventId() throws Exception {
+        UserEntity userEntity = userRepository.save(UserEntity.builder().age(20).name("小张").gender("male")
+                .email("1@a.com").phone("13423433411").vote(10).build());
+        String requestJson = "{\"eventName\":\"新的热搜事件名称\",\"eventKeyword\":\"新的关键字\",\"userId\":" + userEntity.getId() + "}";
+        mockMvc.perform(post("/rs/update/1").content(requestJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        List<RsEventEntity> rsEventEntity = rsEventRepository.findAll();
+        assertEquals("新的热搜事件名称", rsEventEntity.get(0).getEventName());//
+    }
+
+    @Test
+    // 传入的rsEventId是错误的
+    void shouldNotUpdateRsEventWhenUserIdNotCampareToEventId() throws Exception {
+        UserEntity userEntity = userRepository.save(UserEntity.builder().age(20).name("小张").gender("male")
+                .email("1@a.com").phone("13423433411").vote(10).build());
+        String requestJson = "{\"eventName\":\"新的热搜事件名称\",\"eventKeyword\":\"新的关键字\",\"userId\":" + userEntity.getId() + "}";
+        System.out.println(requestJson);
+        mockMvc.perform(post("/rs/update/2").content(requestJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldUpdateRsEventNameWhenRsEventKeywordNotExists() throws Exception {
+        UserEntity userEntity = userRepository.save(UserEntity.builder().age(20).name("小张").gender("male")
+                .email("1@a.com").phone("13423433411").vote(10).build());
+        String requestJson = "{\"eventName\":\"\",\"eventKeyword\":\"新的关键字\",\"userId\":" + userEntity.getId() + "}";
+        System.out.println(requestJson);
+        mockMvc.perform(post("/rs/update/1").content(requestJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldUpdateRsEventKeywordWhenRsEventNameNotExists() throws Exception {
+        UserEntity userEntity = userRepository.save(UserEntity.builder().age(20).name("小张").gender("male")
+                .email("1@a.com").phone("13423433411").vote(10).build());
+        String requestJson = "{\"eventName\":\"新的热搜事件名称\",\"eventKeyword\":\"\",\"userId\":" + userEntity.getId() + "}";
+        System.out.println(requestJson);
+        mockMvc.perform(post("/rs/update/1").content(requestJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test
