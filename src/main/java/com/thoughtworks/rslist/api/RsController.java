@@ -19,6 +19,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.DoubleStream;
 
 
 @RestController
@@ -80,6 +81,16 @@ public class RsController {
         RsEventEntity rsEventEntity = RsEventEntity.builder().eventName(rsEvent.getEventName())
                 .eventKeyword(rsEvent.getEventKeyword()).userEntity(userEntity.get()).build();
         rsEventRepository.save(rsEventEntity);
+        UserEntity userEntityPush = UserEntity.builder()
+                .id(userEntity.get().getId())
+                .name(userEntity.get().getName())
+                .email(userEntity.get().getEmail())
+                .age(userEntity.get().getAge())
+                .gender(userEntity.get().getGender())
+                .phone(userEntity.get().getPhone())
+                .vote(userEntity.get().getVote())
+                .build();
+        userRepository.save(userEntityPush);
         Integer index = rsList.size();
         return ResponseEntity.ok(null);
     }
@@ -87,21 +98,23 @@ public class RsController {
     @PostMapping("/rs/update/{rsEventId}")
     public ResponseEntity updateRsEventWhenUserIdCampareEventId(@PathVariable Integer rsEventId,
                                                                 @RequestBody @Valid RsEvent rsEvent) {
-        Optional<UserEntity> userEntity = userRepository.findById(rsEventId);
+        Optional<UserEntity> userEntity = userRepository.findById(rsEvent.getUserId());
         if (userEntity.isPresent()) {
             Optional<RsEventEntity> rsEventEntity = rsEventRepository.findById(rsEventId);
+            System.out.println(rsEvent.getEventKeyword());
+            System.out.println(rsEvent.getEventName());
             if (rsEventEntity.isPresent()) {
-                if (!rsEvent.getEventKeyword().isEmpty()){
+                if (!rsEvent.getEventKeyword().isEmpty()) {
                     rsEventEntity.get().setEventKeyword(rsEvent.getEventKeyword());
                 }
-                if (!rsEvent.getEventName().isEmpty()){
+                if (!rsEvent.getEventName().isEmpty()) {
                     rsEventEntity.get().setEventName(rsEvent.getEventName());
                 }
+                rsEventRepository.save(rsEventEntity.get());
+                return ResponseEntity.ok(null);
             } else {
-                rsEventRepository.save(RsEventEntity.builder().eventName(rsEvent.getEventName())
-                        .eventKeyword(rsEvent.getEventKeyword()).userEntity(userEntity.get()).build());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }
-            return ResponseEntity.ok(null);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

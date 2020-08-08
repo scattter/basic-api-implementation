@@ -34,10 +34,8 @@ class RsControllerTest {
 
     @Autowired
     MockMvc mockMvc;
-
     @Autowired
     RsEventRepository rsEventRepository;
-
     @Autowired
     UserRepository userRepository;
 
@@ -92,8 +90,14 @@ class RsControllerTest {
     void shouldUpdateRsEventWhenUserIdCampareToEventId() throws Exception {
         UserEntity userEntity = userRepository.save(UserEntity.builder().age(20).name("小张").gender("male")
                 .email("1@a.com").phone("13423433411").vote(10).build());
-        String requestJson = "{\"eventName\":\"新的热搜事件名称\",\"eventKeyword\":\"新的关键字\",\"userId\":" + userEntity.getId() + "}";
-        mockMvc.perform(post("/rs/update/1").content(requestJson)
+        rsEventRepository.save(RsEventEntity.builder()
+                .eventName("旧热搜")
+                .eventKeyword("无分类")
+                .userEntity(userEntity)
+                .voteNum(0)
+                .build());
+        String requestJson = "{\"eventName\":\"新的热搜事件名称\",\"eventKeyword\":\"新的关键字\",\"userId\":\"1\"}";
+        mockMvc.perform(post("/rs/update/2").content(requestJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
         List<RsEventEntity> rsEventEntity = rsEventRepository.findAll();
@@ -105,7 +109,13 @@ class RsControllerTest {
     void shouldNotUpdateRsEventWhenUserIdNotCampareToEventId() throws Exception {
         UserEntity userEntity = userRepository.save(UserEntity.builder().age(20).name("小张").gender("male")
                 .email("1@a.com").phone("13423433411").vote(10).build());
-        String requestJson = "{\"eventName\":\"新的热搜事件名称\",\"eventKeyword\":\"新的关键字\",\"userId\":" + userEntity.getId() + "}";
+        rsEventRepository.save(RsEventEntity.builder()
+                .eventName("旧热搜")
+                .eventKeyword("无分类")
+                .userEntity(userEntity)
+                .voteNum(0)
+                .build());
+        String requestJson = "{\"eventName\":\"新的热搜事件名称\",\"eventKeyword\":\"新的关键字\",\"userId\":\"2\"}";
         System.out.println(requestJson);
         mockMvc.perform(post("/rs/update/2").content(requestJson)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -116,9 +126,14 @@ class RsControllerTest {
     void shouldUpdateRsEventNameWhenRsEventKeywordNotExists() throws Exception {
         UserEntity userEntity = userRepository.save(UserEntity.builder().age(20).name("小张").gender("male")
                 .email("1@a.com").phone("13423433411").vote(10).build());
-        String requestJson = "{\"eventName\":\"\",\"eventKeyword\":\"新的关键字\",\"userId\":" + userEntity.getId() + "}";
-        System.out.println(requestJson);
-        mockMvc.perform(post("/rs/update/1").content(requestJson)
+        rsEventRepository.save(RsEventEntity.builder()
+                .eventName("旧热搜")
+                .eventKeyword("无分类")
+                .userEntity(userEntity)
+                .voteNum(0)
+                .build());
+        String requestJson = "{\"eventName\":\"新的热搜事件名称2\",\"eventKeyword\":\"\",\"userId\":\"1\"}";
+        mockMvc.perform(post("/rs/update/2").content(requestJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }

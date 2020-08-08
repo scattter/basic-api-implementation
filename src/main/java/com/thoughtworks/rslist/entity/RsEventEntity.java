@@ -16,9 +16,10 @@ import javax.persistence.*;
 public class RsEventEntity {
     @Id
     @GeneratedValue
-    private Integer id;
+    private Integer eventId;
     private String eventName;
     private String eventKeyword;
+    private Integer voteNum;
     //private Integer userId;
 
     @ManyToOne

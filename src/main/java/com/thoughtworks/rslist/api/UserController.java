@@ -4,17 +4,13 @@ package com.thoughtworks.rslist.api;
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.exception.CommenError;
-import com.thoughtworks.rslist.exception.InvalidRequestParamException;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +21,14 @@ public class UserController {
     public static List<User> users = new ArrayList<>();
     public static List<String> userNames = new ArrayList<>();
 
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    RsEventRepository rsEventRepository;
+
+    private final UserRepository userRepository;
+    private final RsEventRepository rsEventRepository;
+
+    public UserController(UserRepository userRepository, RsEventRepository rsEventRepository) {
+        this.userRepository = userRepository;
+        this.rsEventRepository = rsEventRepository;
+    }
 
     @PostMapping("/user")
     public ResponseEntity register(@RequestBody(required = false) @Valid User user) {

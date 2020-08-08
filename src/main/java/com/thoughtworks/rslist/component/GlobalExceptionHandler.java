@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
         if (error instanceof MethodArgumentNotValidException) {
             message = "invalid param";
         } else {
-            message = "invalid index";
+            message = error.getMessage();
         }
         commenError.setError(message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commenError);
