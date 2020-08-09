@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -38,7 +39,7 @@ public class UserController {
                 .age(user.getAge())
                 .email(user.getEmail())
                 .phone(user.getPhone())
-                .vote(user.getVote())
+                .vote(10)
                 .build();
         userRepository.save(userEntity);
         return ResponseEntity.status(HttpStatus.OK).header("index", "ok").build();
@@ -56,8 +57,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(commenError);
     }
 
-    @DeleteMapping("/user/{id}")
-    public ResponseEntity deleteUser(@PathVariable Integer id){
+    @DeleteMapping("/user/delete/{id}")
+    public ResponseEntity deleteUser(@PathVariable Integer id) {
         userRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }

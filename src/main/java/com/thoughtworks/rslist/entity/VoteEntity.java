@@ -17,13 +17,16 @@ import java.time.LocalDateTime;
 public class VoteEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private int voteId;
 
     private LocalDateTime localDateTime;
 
     private int num;
     @ManyToOne
-    @JoinColumn(name = "user_id") private UserEntity user;
-    @ManyToOne @JoinColumn(name = "rs_event_id") private RsEventEntity rsEvent;
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+    @ManyToOne
+    @JoinColumn(name = "rs_event_id")
+    private RsEventEntity rsEvent;
 }

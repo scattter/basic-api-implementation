@@ -47,12 +47,9 @@ public class VoteController {
                 .voteNum(0)
                 .build();
         rsEventEntity = rsEventRepository.save(rsEventEntity);
-//        VoteEntity voteEntity = VoteEntity.builder().user(userEntity).rsEvent(rsEventEntity).localDateTime(LocalDateTime.now())
-//                .num(5).build();
-//        voteRepository.save(voteEntity);
     }
 
-    @PostMapping("/rs/vote/{rsEventId}")
+    @PostMapping("/rs/{rsEventId}/vote")
     public ResponseEntity userVote(@PathVariable Integer rsEventId,
                                    @RequestBody Vote voteInfo) {
         // 反序列化问题无时间  所以先把时间加上
@@ -71,7 +68,6 @@ public class VoteController {
             Integer userNowHavePickets = userEntity.get().getVote();
             // 如果投票大于当前用户剩余票数
             if (voteInfo.getVoteNum() > userNowHavePickets) {
-                // throw new InvlidIndexException("您剩余的票数不足!");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }
             // 更新用户票数  存入user数据库

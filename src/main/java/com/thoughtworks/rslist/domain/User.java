@@ -1,6 +1,7 @@
 package com.thoughtworks.rslist.domain;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,6 +12,7 @@ import javax.validation.constraints.*;
 @RestController
 //@JsonView(RsEvent.PrivateView.class)
 //@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     public User(@Size(max = 8) @NotNull String name, @NotNull String gender, @Max(100) @Min(18) @NotNull Integer age, @Email String email, @Pattern(regexp = "1\\d{10}") String phone) {
@@ -21,6 +23,7 @@ public class User {
         this.phone = phone;
     }
 
+    private Integer id;
 
     @Size(max = 8)
     @NotNull

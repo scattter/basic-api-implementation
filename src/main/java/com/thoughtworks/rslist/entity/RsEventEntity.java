@@ -15,7 +15,7 @@ import javax.persistence.*;
 @Builder
 public class RsEventEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Integer eventId;
     private String eventName;
     private String eventKeyword;
@@ -23,5 +23,5 @@ public class RsEventEntity {
     //private Integer userId;
 
     @ManyToOne
-    private  UserEntity userEntity;
+    private UserEntity userEntity;
 }

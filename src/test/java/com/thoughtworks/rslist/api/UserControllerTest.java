@@ -138,9 +138,18 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.error", org.hamcrest.Matchers.is("invalid user")));
     }
 
+    @Test
+    void shouldRegister() throws Exception {
+        User user = new User("adasdad", "male", 18, "1@th.com", "11234567890");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/user")
+                .content(userJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        assertEquals(1,userRepository.findAll().size());
+    }
 
-    // 这里148行使用userEntity(userEntity_1) 代替userId(userEntity.getUserId())
-    // 因为RsEventEntity里面字段改变了  所以这里的参数也改变了
     @Test
     void shouldDeleteUser() throws Exception {
         UserEntity userEntity_1 = userRepository.save(UserEntity.builder().age(20).name("小张").gender("male")
@@ -149,7 +158,7 @@ class UserControllerTest {
                 .eventKeyword("sdfsdfsdf").userEntity(userEntity_1).build();
         rsEventRepository.save(rsEventEntity);
 
-        mockMvc.perform(delete("/user/{id}",userEntity_1.getId()))
+        mockMvc.perform(delete("/user/delete/{id}",userEntity_1.getId()))
                 .andExpect(status().isOk());
         assertEquals(0,rsEventRepository.findAll().size());
         assertEquals(0,userRepository.findAll().size());
