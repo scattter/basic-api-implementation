@@ -1,6 +1,7 @@
 package com.thoughtworks.rslist.api;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonView;
 import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.User;
@@ -14,6 +15,9 @@ import org.springframework.validation.annotation.Validated;
 =======
 import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.User;
+=======
+import com.thoughtworks.rslist.domain.RsEvent;
+>>>>>>> jpa-2
 import com.thoughtworks.rslist.entity.RsEventEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.exception.CommenError;
@@ -21,6 +25,13 @@ import com.thoughtworks.rslist.exception.InvalidRequestParamException;
 import com.thoughtworks.rslist.exception.InvlidIndexException;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
+<<<<<<< HEAD
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+>>>>>>> jpa-2
+=======
+import com.thoughtworks.rslist.service.RsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,15 +43,20 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+<<<<<<< HEAD
 import java.util.stream.DoubleStream;
 
 
 import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
+=======
+
+>>>>>>> jpa-2
 
 @RestController
 @Slf4j
 public class RsController {
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     private List<RsEvent> rsList = initRsEvent();
 
@@ -136,10 +152,22 @@ public class RsController {
     public RsController(RsEventRepository rsEventRepository, UserRepository userRepository) {
         this.rsEventRepository = rsEventRepository;
         this.userRepository = userRepository;
+=======
+
+    private final RsEventRepository rsEventRepository;
+    private final UserRepository userRepository;
+    private final RsService rsService;
+
+    public RsController(RsEventRepository rsEventRepository, UserRepository userRepository, RsService rsService) {
+        this.rsEventRepository = rsEventRepository;
+        this.userRepository = userRepository;
+        this.rsService = rsService;
+>>>>>>> jpa-2
     }
 
 
     @GetMapping("/rs/{rsEventId}")
+<<<<<<< HEAD
     public ResponseEntity<RsEventEntity> getOneRsEvent(@PathVariable Integer rsEventId) throws InvlidIndexException {
         Optional<RsEventEntity> rsEventEntity = rsEventRepository.findById(rsEventId);
         if (!rsEventEntity.isPresent()) {
@@ -152,11 +180,17 @@ public class RsController {
                     .voteNum(rsEventEntity.get().getVoteNum())
                     .build());
         }
+=======
+    public ResponseEntity getOneRsEvent(@PathVariable Integer rsEventId) throws InvlidIndexException {
+        RsEventEntity result = rsService.getOneRsEvent(rsEventId);
+        return ResponseEntity.ok(result);
+>>>>>>> jpa-2
     }
 
     @GetMapping("/rs/list")
     public ResponseEntity<List<RsEvent>> getRsEventBetween(@RequestParam(required = false) Integer start,
                                                            @RequestParam(required = false) Integer end) throws InvalidRequestParamException {
+<<<<<<< HEAD
         List<RsEventEntity> re = rsEventRepository.findAll();
         List<RsEvent> result = new ArrayList<>();
         if (start == null || end == null) {
@@ -174,10 +208,15 @@ public class RsController {
             }
             return ResponseEntity.ok(result);
         }
+=======
+        List<RsEvent> result = rsService.getRsEventBetween(start, end);
+        return ResponseEntity.ok(result);
+>>>>>>> jpa-2
     }
 
     @PostMapping("/rs/event")
     public ResponseEntity addRsEvent(@RequestBody @Valid RsEvent rsEvent) {
+<<<<<<< HEAD
         Optional<UserEntity> userEntity = userRepository.findById(rsEvent.getUserId());
         if (!userEntity.isPresent()) {
             return ResponseEntity.badRequest().build();
@@ -191,12 +230,16 @@ public class RsController {
                 .userEntity(userEntity.get())
                 .build();
         rsEventRepository.save(rsEventEntity);
+=======
+        rsService.addRsEvent(rsEvent);
+>>>>>>> jpa-2
         return ResponseEntity.ok(null);
     }
 
     @PostMapping("/rs/{rsEventId}/update")
     public ResponseEntity updateRsEventWhenUserIdCampareEventId(@PathVariable Integer rsEventId,
                                                                 @RequestBody @Valid RsEvent rsEvent) {
+<<<<<<< HEAD
         Optional<UserEntity> userEntity = userRepository.findById(rsEvent.getUserId());
         Optional<RsEventEntity> rsEventEntity = rsEventRepository.findById(rsEventId);
         if (!userEntity.isPresent() || !rsEventEntity.isPresent()) {
@@ -212,11 +255,16 @@ public class RsController {
             return ResponseEntity.ok(null);
         }
 
+=======
+        rsService.updateRsEventWhenUserIdCampareEventId(rsEventId,rsEvent);
+        return ResponseEntity.ok(null);
+>>>>>>> jpa-2
     }
 
 
     @DeleteMapping("/rs/list/{rsEventId}/delete")
     public ResponseEntity deleteOneRsEvent(@PathVariable Integer rsEventId) {
+<<<<<<< HEAD
         Optional<RsEventEntity> rsEventEntity = rsEventRepository.findById(rsEventId);
         if (!rsEventEntity.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -224,6 +272,10 @@ public class RsController {
             rsEventRepository.delete(rsEventEntity.get());
             return ResponseEntity.ok(null);
         }
+>>>>>>> jpa-2
+=======
+        rsService.deleteOneRsEvent(rsEventId);
+        return ResponseEntity.ok(null);
 >>>>>>> jpa-2
     }
 

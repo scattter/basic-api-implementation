@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.api;
 
+<<<<<<< HEAD
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.User;
@@ -15,11 +16,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+=======
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.rslist.domain.User;
+import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.repository.RsEventRepository;
+import com.thoughtworks.rslist.repository.UserRepository;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+>>>>>>> jpa-2
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+<<<<<<< HEAD
 import static org.hamcrest.Matchers.*;
 
 import javax.validation.constraints.Null;
@@ -36,6 +48,10 @@ import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 >>>>>>> jpa-2
+=======
+import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+>>>>>>> jpa-2
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -43,6 +59,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class UserControllerTest {
 
+<<<<<<< HEAD
     @Autowired
     MockMvc mockMvc;
 
@@ -72,6 +89,37 @@ class UserControllerTest {
         UserController.users.clear();
         rsEventRepository.deleteAll();
         userRepository.deleteAll();
+    }
+
+>>>>>>> jpa-2
+=======
+    private final MockMvc mockMvc;
+    private final UserRepository userRepository;
+    private final RsEventRepository rsEventRepository;
+
+    UserControllerTest(MockMvc mockMvc, UserRepository userRepository, RsEventRepository rsEventRepository) {
+        this.mockMvc = mockMvc;
+        this.userRepository = userRepository;
+        this.rsEventRepository = rsEventRepository;
+    }
+
+    @BeforeEach
+    void setup() {
+        //UserController.users.clear();
+        rsEventRepository.deleteAll();
+        userRepository.deleteAll();
+        UserEntity userEntity = userRepository.save(UserEntity.builder().age(20).name("小红").gender("male")
+                .email("1@a.com").phone("13423433411").vote(10).build());
+        UserEntity userEntity1 = userRepository.save(UserEntity.builder().age(20).name("小张").gender("male")
+                .email("1@a.com").phone("13423433411").vote(10).build());
+        UserEntity userEntity2 = userRepository.save(UserEntity.builder().age(21).name("小王").gender("male")
+                .email("2@a.com").phone("13423433412").vote(10).build());
+        UserEntity userEntity3 = userRepository.save(UserEntity.builder().age(22).name("小李").gender("male")
+                .email("3@a.com").phone("13423433413").vote(10).build());
+        userRepository.save(userEntity);
+        userRepository.save(userEntity1);
+        userRepository.save(userEntity2);
+        userRepository.save(userEntity3);
     }
 
 >>>>>>> jpa-2
@@ -145,6 +193,7 @@ class UserControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(user);
 <<<<<<< HEAD
+<<<<<<< HEAD
         mockMvc.perform(post("/user").content(userJson).contentType(MediaType.APPLICATION_JSON))
 =======
         mockMvc.perform(post("/user").content(userJson)
@@ -158,6 +207,13 @@ class UserControllerTest {
         mockMvc.perform(get("/users"))
                 .andExpect(status().isOk());
     }
+=======
+        mockMvc.perform(post("/user").content(userJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+>>>>>>> jpa-2
 
     @Test
     void shouldReturnInvalidUserException() throws Exception {
@@ -169,7 +225,10 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.error", org.hamcrest.Matchers.is("invalid user")));
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> jpa-2
 
     @Test
     void shouldRegister() throws Exception {
@@ -180,6 +239,7 @@ class UserControllerTest {
                 .content(userJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+<<<<<<< HEAD
         assertEquals(1,userRepository.findAll().size());
     }
 
@@ -195,6 +255,22 @@ class UserControllerTest {
                 .andExpect(status().isOk());
         assertEquals(0,rsEventRepository.findAll().size());
         assertEquals(0,userRepository.findAll().size());
+    }
+>>>>>>> jpa-2
+=======
+    }
+
+    @Test
+    void shouldGetUsers() throws Exception {
+        mockMvc.perform(get("/users"))
+                .andExpect(jsonPath("$[0].name", Matchers.is("小红")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldDeleteUser() throws Exception {
+        mockMvc.perform(delete("/user/1/delete"))
+                .andExpect(status().isOk());
     }
 >>>>>>> jpa-2
 }

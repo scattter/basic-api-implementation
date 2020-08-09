@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.api;
 
+<<<<<<< HEAD
 import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.domain.Vote;
@@ -31,10 +32,39 @@ public class VoteController {
     @Autowired
     RsEventRepository rsEventRepository;
 
+=======
+import com.thoughtworks.rslist.domain.Vote;
+import com.thoughtworks.rslist.entity.RsEventEntity;
+import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.repository.RsEventRepository;
+import com.thoughtworks.rslist.repository.UserRepository;
+import com.thoughtworks.rslist.repository.VoteRepository;
+import com.thoughtworks.rslist.service.VoteService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+public class VoteController {
+
+    private final VoteRepository voteRepository;
+    private final UserRepository userRepository;
+    private final RsEventRepository rsEventRepository;
+    private final VoteService voteService;
+>>>>>>> jpa-2
 
     UserEntity userEntity;
     RsEventEntity rsEventEntity;
 
+<<<<<<< HEAD
+=======
+    public VoteController(VoteRepository voteRepository, UserRepository userRepository, RsEventRepository rsEventRepository, VoteService voteService) {
+        this.voteRepository = voteRepository;
+        this.userRepository = userRepository;
+        this.rsEventRepository = rsEventRepository;
+        this.voteService = voteService;
+    }
+
+>>>>>>> jpa-2
 
     void setUp() {
         userEntity = UserEntity.builder().name("idolice").age(19).email("a@b.com").gender("female")
@@ -52,6 +82,7 @@ public class VoteController {
     @PostMapping("/rs/{rsEventId}/vote")
     public ResponseEntity userVote(@PathVariable Integer rsEventId,
                                    @RequestBody Vote voteInfo) {
+<<<<<<< HEAD
         // 反序列化问题无时间  所以先把时间加上
         voteInfo.setTime(LocalDateTime.now());
         // 先看user表中是否存在这个用户
@@ -88,6 +119,10 @@ public class VoteController {
             return ResponseEntity.ok(null);
         }
 
+=======
+        voteService.userVote(rsEventId, voteInfo);
+        return ResponseEntity.ok(null);
+>>>>>>> jpa-2
     }
 
 }

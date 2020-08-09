@@ -57,7 +57,11 @@ class VoteControllerTest {
         Vote vote = new Vote(1, null, 6);
         ObjectMapper objectMapper = new ObjectMapper();
         String requestJson = objectMapper.writeValueAsString(vote);
+<<<<<<< HEAD
         mockMvc.perform(post("/rs/vote/2").content(requestJson)
+=======
+        mockMvc.perform(post("/rs/1/vote").content(requestJson)
+>>>>>>> jpa-2
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -69,7 +73,11 @@ class VoteControllerTest {
         Vote vote = new Vote(1, null, 6);
         ObjectMapper objectMapper = new ObjectMapper();
         String requestJson = objectMapper.writeValueAsString(vote);
+<<<<<<< HEAD
         mockMvc.perform(post("/rs/1/vote").content(requestJson)
+=======
+        mockMvc.perform(post("/rs/2/vote").content(requestJson)
+>>>>>>> jpa-2
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -81,9 +89,16 @@ class VoteControllerTest {
         Vote vote = new Vote(1, null, 16);
         ObjectMapper objectMapper = new ObjectMapper();
         String requestJson = objectMapper.writeValueAsString(vote);
+<<<<<<< HEAD
         mockMvc.perform(post("/rs/2/vote").content(requestJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
 
+=======
+        mockMvc.perform(post("/rs/1/vote").content(requestJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+>>>>>>> jpa-2
 }

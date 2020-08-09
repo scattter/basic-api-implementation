@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -14,6 +15,8 @@ public class RsEvent {
     public interface PublicView{}
     public interface PrivateView extends PublicView{}
 =======
+=======
+>>>>>>> jpa-2
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,6 +34,9 @@ public class RsEvent implements Serializable {
 
     public interface PrivateView extends PublicView {
     }
+<<<<<<< HEAD
+>>>>>>> jpa-2
+=======
 >>>>>>> jpa-2
 
     @NotNull
@@ -44,6 +50,7 @@ public class RsEvent implements Serializable {
     @NotNull
     //@JsonView(PrivateView.class)
 <<<<<<< HEAD
+<<<<<<< HEAD
     private User eventUser;
 
     @JsonIgnore
@@ -55,6 +62,8 @@ public class RsEvent implements Serializable {
     public void seteventUser(User eventUser) {
         this.eventUser = eventUser;
 =======
+=======
+>>>>>>> jpa-2
     private Integer userId;
 
     @JsonIgnore
@@ -65,6 +74,9 @@ public class RsEvent implements Serializable {
     @JsonProperty
     public void setUserId(Integer userId) {
         this.userId = userId;
+<<<<<<< HEAD
+>>>>>>> jpa-2
+=======
 >>>>>>> jpa-2
     }
 
@@ -85,6 +97,7 @@ public class RsEvent implements Serializable {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     public RsEvent() {
     }
 
@@ -93,6 +106,8 @@ public class RsEvent implements Serializable {
         this.eventKeyword = eventKeyword;
         this.eventUser = eventUser;
     }
+=======
+>>>>>>> jpa-2
 =======
 >>>>>>> jpa-2
 }

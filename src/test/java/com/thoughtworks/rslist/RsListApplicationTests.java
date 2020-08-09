@@ -42,7 +42,10 @@ class RsListApplicationTests {
         mockMvc.perform(post("/user")
                 .contentType(MediaType.APPLICATION_JSON).content(request))
                 .andExpect(status().isOk());
+<<<<<<< HEAD
 
+=======
+>>>>>>> jpa-2
         List<UserEntity> users = userRepository.findAll();
         assertEquals(1, users.size());
         assertEquals("xc", users.get(0).getName());

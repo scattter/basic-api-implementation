@@ -2,6 +2,7 @@ package com.thoughtworks.rslist.domain;
 
 import com.fasterxml.jackson.annotation.JsonView;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import lombok.Data;
 
 import javax.validation.constraints.*;
@@ -56,6 +57,8 @@ public class User {
         this.phone = phone;
     }
 =======
+=======
+>>>>>>> jpa-2
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -79,6 +82,9 @@ public class User {
     }
 
     private Integer id;
+<<<<<<< HEAD
+>>>>>>> jpa-2
+=======
 >>>>>>> jpa-2
 
     @Size(max = 8)
