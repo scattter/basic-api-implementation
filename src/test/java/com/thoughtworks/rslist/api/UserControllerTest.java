@@ -1,30 +1,19 @@
 package com.thoughtworks.rslist.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.User;
-import com.thoughtworks.rslist.entity.RsEventEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.*;
-
-import javax.validation.constraints.Null;
-
-import java.util.List;
-
 import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,19 +22,33 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class UserControllerTest {
 
-    @Autowired
-    MockMvc mockMvc;
+    private final MockMvc mockMvc;
+    private final UserRepository userRepository;
+    private final RsEventRepository rsEventRepository;
 
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    RsEventRepository rsEventRepository;
+    UserControllerTest(MockMvc mockMvc, UserRepository userRepository, RsEventRepository rsEventRepository) {
+        this.mockMvc = mockMvc;
+        this.userRepository = userRepository;
+        this.rsEventRepository = rsEventRepository;
+    }
 
     @BeforeEach
     void setup() {
-        UserController.users.clear();
+        //UserController.users.clear();
         rsEventRepository.deleteAll();
         userRepository.deleteAll();
+        UserEntity userEntity = userRepository.save(UserEntity.builder().age(20).name("小红").gender("male")
+                .email("1@a.com").phone("13423433411").vote(10).build());
+        UserEntity userEntity1 = userRepository.save(UserEntity.builder().age(20).name("小张").gender("male")
+                .email("1@a.com").phone("13423433411").vote(10).build());
+        UserEntity userEntity2 = userRepository.save(UserEntity.builder().age(21).name("小王").gender("male")
+                .email("2@a.com").phone("13423433412").vote(10).build());
+        UserEntity userEntity3 = userRepository.save(UserEntity.builder().age(22).name("小李").gender("male")
+                .email("3@a.com").phone("13423433413").vote(10).build());
+        userRepository.save(userEntity);
+        userRepository.save(userEntity1);
+        userRepository.save(userEntity2);
+        userRepository.save(userEntity3);
     }
 
 
@@ -122,11 +125,6 @@ class UserControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    void shouldGetUsers() throws Exception {
-        mockMvc.perform(get("/users"))
-                .andExpect(status().isOk());
-    }
 
     @Test
     void shouldReturnInvalidUserException() throws Exception {
@@ -147,20 +145,18 @@ class UserControllerTest {
                 .content(userJson)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-        assertEquals(1,userRepository.findAll().size());
+    }
+
+    @Test
+    void shouldGetUsers() throws Exception {
+        mockMvc.perform(get("/users"))
+                .andExpect(jsonPath("$[0].name", Matchers.is("小红")))
+                .andExpect(status().isOk());
     }
 
     @Test
     void shouldDeleteUser() throws Exception {
-        UserEntity userEntity_1 = userRepository.save(UserEntity.builder().age(20).name("小张").gender("male")
-                .email("1@a.com").phone("13423433411").vote(10).build());
-        RsEventEntity rsEventEntity = RsEventEntity.builder().eventName("kkkk")
-                .eventKeyword("sdfsdfsdf").userEntity(userEntity_1).build();
-        rsEventRepository.save(rsEventEntity);
-
-        mockMvc.perform(delete("/user/delete/{id}",userEntity_1.getId()))
+        mockMvc.perform(delete("/user/1/delete"))
                 .andExpect(status().isOk());
-        assertEquals(0,rsEventRepository.findAll().size());
-        assertEquals(0,userRepository.findAll().size());
     }
 }

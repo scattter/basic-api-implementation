@@ -2,12 +2,11 @@ package com.thoughtworks.rslist.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.RsEvent;
-import com.thoughtworks.rslist.domain.User;
 import com.thoughtworks.rslist.entity.RsEventEntity;
 import com.thoughtworks.rslist.entity.UserEntity;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
-import org.junit.jupiter.api.AfterEach;
+import com.thoughtworks.rslist.service.RsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +39,12 @@ class RsControllerTest {
     RsEventRepository rsEventRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    RsService rsService;
 
     @BeforeEach
     void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(new RsController(rsEventRepository, userRepository)).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(new RsController(rsEventRepository, userRepository, rsService)).build();
         rsEventRepository.deleteAll();
         userRepository.deleteAll();
         UserEntity userEntity = userRepository.save(UserEntity.builder().age(20).name("小红").gender("male")
@@ -95,6 +96,30 @@ class RsControllerTest {
     }
 
     @Test
+    void shouldGetRsEventBetween() throws Exception {
+        mockMvc.perform(get("/rs/list?start=1&end=2"))
+                .andExpect(jsonPath("$[0].eventName", is("小热搜")))
+                .andExpect(jsonPath("$[0].eventKeyword", is("小分类")))
+                .andExpect(jsonPath("$[1].eventName", is("中热搜")))
+                .andExpect(jsonPath("$[1].eventKeyword", is("中分类")))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/list?start=2&end=3"))
+                .andExpect(jsonPath("$[0].eventName", is("中热搜")))
+                .andExpect(jsonPath("$[0].eventKeyword", is("中分类")))
+                .andExpect(jsonPath("$[1].eventName", is("大热搜")))
+                .andExpect(jsonPath("$[1].eventKeyword", is("大分类")))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/rs/list?start=1&end=3"))
+                .andExpect(jsonPath("$[0].eventName", is("小热搜")))
+                .andExpect(jsonPath("$[0].eventKeyword", is("小分类")))
+                .andExpect(jsonPath("$[1].eventName", is("中热搜")))
+                .andExpect(jsonPath("$[1].eventKeyword", is("中分类")))
+                .andExpect(jsonPath("$[2].eventName", is("大热搜")))
+                .andExpect(jsonPath("$[2].eventKeyword", is("大分类")))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void shouldAddRsEventWhenUserExists() throws Exception {
         String requestJson = "{\"eventName\":\"第四个事件\",\"eventKeyword\":\"添加事件\",\"userId\":\"1\"}";
         mockMvc.perform(post("/rs/event").content(requestJson)
@@ -106,10 +131,48 @@ class RsControllerTest {
     }
 
     @Test
-    void shouldNotAddRsEventWhenUserNotExists() throws Exception {
+    void shouldNotAddRsEventWhenUserIdInvalid() throws Exception {
         String requestJson = "{\"eventName\":\"第四个事件\",\"eventKeyword\":\"添加事件\",\"userId\":100}";
         mockMvc.perform(post("/rs/event").content(requestJson)
                 .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+        List<RsEventEntity> rsEventEntity = rsEventRepository.findAll();
+        assertEquals(4, rsEventEntity.size());
+    }
+
+    @Test
+    void shouldNotAddRsEventWhenEventNameIsNull() throws Exception {
+        RsEvent rsEvent = new RsEvent(null, "添加事件", 2);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(rsEvent);
+        mockMvc.perform(post("/rs/event")
+                .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+        List<RsEventEntity> rsEventEntity = rsEventRepository.findAll();
+        assertEquals(4, rsEventEntity.size());
+    }
+
+    @Test
+    void shouldNotAddRsEventWhenEventKeywordIsNull() throws Exception {
+        RsEvent rsEvent = new RsEvent("第四个事件", null, 2);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(rsEvent);
+
+        mockMvc.perform(post("/rs/event")
+                .content(requestJson).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+        List<RsEventEntity> rsEventEntity = rsEventRepository.findAll();
+        assertEquals(4, rsEventEntity.size());
+    }
+
+    @Test
+    void shouldNotAddRsEventWhenEventUserIdIsNull() throws Exception {
+        RsEvent rsEvent = new RsEvent("第四个事件", "事件类型更改", null);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(rsEvent);
+
+        mockMvc.perform(post("/rs/event")
+                .content(requestJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
         List<RsEventEntity> rsEventEntity = rsEventRepository.findAll();
         assertEquals(4, rsEventEntity.size());
@@ -123,15 +186,6 @@ class RsControllerTest {
                 .andExpect(status().isOk());
         List<RsEventEntity> rsEventEntity = rsEventRepository.findAll();
         assertEquals("新的热搜事件名称", rsEventEntity.get(1).getEventName());//
-    }
-
-    @Test
-        // 传入的rsEventId是错误的
-    void shouldNotUpdateRsEventWhenUserIdNotCampareToEventId() throws Exception {
-        String requestJson = "{\"eventName\":\"新的热搜事件名称\",\"eventKeyword\":\"新的关键字\",\"userId\":\"2\"}";
-        mockMvc.perform(post("/rs/5/update").content(requestJson)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -156,29 +210,13 @@ class RsControllerTest {
     }
 
     @Test
-    void shouldGetRsEventBetween() throws Exception {
-        mockMvc.perform(get("/rs/list?start=1&end=2"))
-                .andExpect(jsonPath("$[0].eventName", is("小热搜")))
-                .andExpect(jsonPath("$[0].eventKeyword", is("小分类")))
-                .andExpect(jsonPath("$[1].eventName", is("中热搜")))
-                .andExpect(jsonPath("$[1].eventKeyword", is("中分类")))
-                .andExpect(status().isOk());
-        mockMvc.perform(get("/rs/list?start=2&end=3"))
-                .andExpect(jsonPath("$[0].eventName", is("中热搜")))
-                .andExpect(jsonPath("$[0].eventKeyword", is("中分类")))
-                .andExpect(jsonPath("$[1].eventName", is("大热搜")))
-                .andExpect(jsonPath("$[1].eventKeyword", is("大分类")))
-                .andExpect(status().isOk());
-        mockMvc.perform(get("/rs/list?start=1&end=3"))
-                .andExpect(jsonPath("$[0].eventName", is("小热搜")))
-                .andExpect(jsonPath("$[0].eventKeyword", is("小分类")))
-                .andExpect(jsonPath("$[1].eventName", is("中热搜")))
-                .andExpect(jsonPath("$[1].eventKeyword", is("中分类")))
-                .andExpect(jsonPath("$[2].eventName", is("大热搜")))
-                .andExpect(jsonPath("$[2].eventKeyword", is("大分类")))
-                .andExpect(status().isOk());
+        // 传入的rsEventId是错误的
+    void shouldNotUpdateRsEventWhenUserIdNotCampareToEventId() throws Exception {
+        String requestJson = "{\"eventName\":\"新的热搜事件名称\",\"eventKeyword\":\"新的关键字\",\"userId\":\"2\"}";
+        mockMvc.perform(post("/rs/5/update").content(requestJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
-
 
     @Test
     void shouldDeleteOneRsevent() throws Exception {
@@ -186,45 +224,6 @@ class RsControllerTest {
                 .andExpect(status().isOk());
         List<RsEventEntity> rsEventEntity = rsEventRepository.findAll();
         assertEquals(3, rsEventEntity.size());
-    }
-
-    @Test
-    void shouldNotAddRsEventWhenEventNameIsNull() throws Exception {
-        RsEvent rsEvent = new RsEvent(null, "添加事件", 2);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String requestJson = objectMapper.writeValueAsString(rsEvent);
-
-        mockMvc.perform(post("/rs/event")
-                .content(requestJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        List<RsEventEntity> rsEventEntity = rsEventRepository.findAll();
-        assertEquals(4, rsEventEntity.size());
-    }
-
-    @Test
-    void shouldNotAddRsEventWhenEventKeywordIsNull() throws Exception {
-        RsEvent rsEvent = new RsEvent("第四个事件", null, 2);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String requestJson = objectMapper.writeValueAsString(rsEvent);
-
-        mockMvc.perform(post("/rs/event")
-                .content(requestJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        List<RsEventEntity> rsEventEntity = rsEventRepository.findAll();
-        assertEquals(4, rsEventEntity.size());
-    }
-
-    @Test
-    void shouldNotAddRsEventWhenEventUserIsNull() throws Exception {
-        RsEvent rsEvent = new RsEvent("第四个事件", "事件类型更改", null);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String requestJson = objectMapper.writeValueAsString(rsEvent);
-
-        mockMvc.perform(post("/rs/event")
-                .content(requestJson).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        List<RsEventEntity> rsEventEntity = rsEventRepository.findAll();
-        assertEquals(4, rsEventEntity.size());
     }
 
     @Test
