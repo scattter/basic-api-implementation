@@ -7,24 +7,28 @@ import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.repository.VoteRepository;
 import com.thoughtworks.rslist.service.VoteService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
+
 @RestController
+@ControllerAdvice
 public class VoteController {
 
-    private final VoteRepository voteRepository;
-    private final UserRepository userRepository;
-    private final RsEventRepository rsEventRepository;
+
+    @Autowired
+    RsEventRepository rsEventRepository;
+    @Autowired
+    UserRepository userRepository;
+
     private final VoteService voteService;
 
     UserEntity userEntity;
     RsEventEntity rsEventEntity;
 
-    public VoteController(VoteRepository voteRepository, UserRepository userRepository, RsEventRepository rsEventRepository, VoteService voteService) {
-        this.voteRepository = voteRepository;
-        this.userRepository = userRepository;
-        this.rsEventRepository = rsEventRepository;
+    public VoteController(VoteService voteService) {
         this.voteService = voteService;
     }
 

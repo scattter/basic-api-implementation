@@ -18,15 +18,12 @@ import java.util.List;
 
 
 @RestController
+@ControllerAdvice
 public class UserController {
 
-    private final UserRepository userRepository;
-    private final RsEventRepository rsEventRepository;
     private final UserService userService;
 
-    public UserController(UserRepository userRepository, RsEventRepository rsEventRepository, UserService userService) {
-        this.userRepository = userRepository;
-        this.rsEventRepository = rsEventRepository;
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 

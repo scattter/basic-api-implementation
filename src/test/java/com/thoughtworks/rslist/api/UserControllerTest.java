@@ -8,12 +8,14 @@ import com.thoughtworks.rslist.repository.UserRepository;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -22,15 +24,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class UserControllerTest {
 
-    private final MockMvc mockMvc;
-    private final UserRepository userRepository;
-    private final RsEventRepository rsEventRepository;
-
-    UserControllerTest(MockMvc mockMvc, UserRepository userRepository, RsEventRepository rsEventRepository) {
-        this.mockMvc = mockMvc;
-        this.userRepository = userRepository;
-        this.rsEventRepository = rsEventRepository;
-    }
+    @Autowired
+    MockMvc mockMvc;
+    @Autowired
+    RsEventRepository rsEventRepository;
+    @Autowired
+    UserRepository userRepository;
 
     @BeforeEach
     void setup() {
@@ -156,7 +155,10 @@ class UserControllerTest {
 
     @Test
     void shouldDeleteUser() throws Exception {
-        mockMvc.perform(delete("/user/1/delete"))
+        int temp = userRepository.findAll().get(3).getId();
+        String uri = String.valueOf(temp-3);
+        mockMvc.perform(delete("/user/"+uri+"/delete"))
                 .andExpect(status().isOk());
+        assertEquals(3,userRepository.findAll().size());
     }
 }

@@ -29,11 +29,9 @@ class VoteControllerTest {
     @Autowired
     MockMvc mockMvc;
     @Autowired
-    UserRepository userRepository;
-    @Autowired
     RsEventRepository rsEventRepository;
     @Autowired
-    VoteRepository voteRepository;
+    UserRepository userRepository;
 
     UserEntity userEntity;
     RsEventEntity rsEventEntity;

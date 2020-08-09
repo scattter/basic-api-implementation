@@ -23,6 +23,7 @@ import java.util.Optional;
 
 @RestController
 @Slf4j
+@ControllerAdvice
 public class RsController {
 
 

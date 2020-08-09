@@ -8,14 +8,17 @@ import com.thoughtworks.rslist.exception.InvalidRequestParamException;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.repository.VoteRepository;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-@Service
+@Configuration
 public class VoteService {
     final RsEventRepository rsEventRepository;
     final UserRepository userRepository;
@@ -27,6 +30,12 @@ public class VoteService {
         this.voteRepository = voteRepository;
     }
 
+    @Bean
+    public VoteService VoteService(RsEventRepository rsEventRepository, UserRepository userRepository, VoteRepository voteRepository) {
+        return new VoteService(rsEventRepository, userRepository, voteRepository);
+    }
+
+    @Transactional
     public void userVote(Integer rsEventId, Vote voteInfo) {
         voteInfo.setTime(LocalDateTime.now());
         Optional<RsEventEntity> rsEventEntity = rsEventRepository.findById(rsEventId);

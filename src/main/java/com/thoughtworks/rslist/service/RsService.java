@@ -9,16 +9,19 @@ import com.thoughtworks.rslist.exception.InvlidIndexException;
 import com.thoughtworks.rslist.repository.RsEventRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.repository.VoteRepository;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Service
+@Configuration
 public class RsService {
     final RsEventRepository rsEventRepository;
     final UserRepository userRepository;
@@ -28,6 +31,11 @@ public class RsService {
         this.rsEventRepository = rsEventRepository;
         this.userRepository = userRepository;
         this.voteRepository = voteRepository;
+    }
+
+    @Bean
+    public RsService RsService(RsEventRepository rsEventRepository, UserRepository userRepository, VoteRepository voteRepository) {
+        return new RsService(rsEventRepository, userRepository, voteRepository);
     }
 
     public RsEventEntity getOneRsEvent(Integer rsEventId) {
@@ -64,7 +72,8 @@ public class RsService {
         }
     }
 
-    public void addRsEvent(RsEvent rsEvent){
+    @Transactional
+    public void addRsEvent(RsEvent rsEvent) {
         Optional<UserEntity> userEntity = userRepository.findById(rsEvent.getUserId());
         if (!userEntity.isPresent()) {
             throw new InvalidRequestParamException("invalid request param");
@@ -80,7 +89,8 @@ public class RsService {
         rsEventRepository.save(rsEventEntity);
     }
 
-    public void updateRsEventWhenUserIdCampareEventId(Integer rsEventId,RsEvent rsEvent){
+    @Transactional
+    public void updateRsEventWhenUserIdCampareEventId(Integer rsEventId, RsEvent rsEvent) {
         Optional<UserEntity> userEntity = userRepository.findById(rsEvent.getUserId());
         Optional<RsEventEntity> rsEventEntity = rsEventRepository.findById(rsEventId);
         if (!userEntity.isPresent() || !rsEventEntity.isPresent()) {
@@ -96,7 +106,8 @@ public class RsService {
         }
     }
 
-    public void deleteOneRsEvent(Integer rsEventId){
+    @Transactional
+    public void deleteOneRsEvent(Integer rsEventId) {
         Optional<RsEventEntity> rsEventEntity = rsEventRepository.findById(rsEventId);
         if (!rsEventEntity.isPresent()) {
             throw new InvalidRequestParamException("invalid request param");
