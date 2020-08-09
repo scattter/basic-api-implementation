@@ -3,6 +3,13 @@ package com.thoughtworks.rslist.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thoughtworks.rslist.domain.User;
+<<<<<<< HEAD
+=======
+import com.thoughtworks.rslist.entity.RsEventEntity;
+import com.thoughtworks.rslist.entity.UserEntity;
+import com.thoughtworks.rslist.repository.RsEventRepository;
+import com.thoughtworks.rslist.repository.UserRepository;
+>>>>>>> jpa-2
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,10 +24,18 @@ import static org.hamcrest.Matchers.*;
 
 import javax.validation.constraints.Null;
 
+<<<<<<< HEAD
 import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+=======
+import java.util.List;
+
+import static org.assertj.core.internal.bytebuddy.matcher.ElementMatchers.is;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+>>>>>>> jpa-2
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -31,6 +46,7 @@ class UserControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+<<<<<<< HEAD
     @BeforeEach
     void setup() {
         UserController.users.clear();
@@ -45,6 +61,20 @@ class UserControllerTest {
                 .andExpect(status().isCreated());
         assertEquals(1, UserController.users.size());
     }
+=======
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    RsEventRepository rsEventRepository;
+
+    @BeforeEach
+    void setup() {
+        UserController.users.clear();
+        rsEventRepository.deleteAll();
+        userRepository.deleteAll();
+    }
+
+>>>>>>> jpa-2
 
     @Test
     void nameShouldLessThan8() throws Exception {
@@ -114,7 +144,12 @@ class UserControllerTest {
         User user = new User("adasdad", "male", 18, "1@th.com", "1123456789");
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(user);
+<<<<<<< HEAD
         mockMvc.perform(post("/user").content(userJson).contentType(MediaType.APPLICATION_JSON))
+=======
+        mockMvc.perform(post("/user").content(userJson)
+                .contentType(MediaType.APPLICATION_JSON))
+>>>>>>> jpa-2
                 .andExpect(status().isBadRequest());
     }
 
@@ -133,4 +168,33 @@ class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error", org.hamcrest.Matchers.is("invalid user")));
     }
+<<<<<<< HEAD
+=======
+
+    @Test
+    void shouldRegister() throws Exception {
+        User user = new User("adasdad", "male", 18, "1@th.com", "11234567890");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(user);
+        mockMvc.perform(post("/user")
+                .content(userJson)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        assertEquals(1,userRepository.findAll().size());
+    }
+
+    @Test
+    void shouldDeleteUser() throws Exception {
+        UserEntity userEntity_1 = userRepository.save(UserEntity.builder().age(20).name("小张").gender("male")
+                .email("1@a.com").phone("13423433411").vote(10).build());
+        RsEventEntity rsEventEntity = RsEventEntity.builder().eventName("kkkk")
+                .eventKeyword("sdfsdfsdf").userEntity(userEntity_1).build();
+        rsEventRepository.save(rsEventEntity);
+
+        mockMvc.perform(delete("/user/delete/{id}",userEntity_1.getId()))
+                .andExpect(status().isOk());
+        assertEquals(0,rsEventRepository.findAll().size());
+        assertEquals(0,userRepository.findAll().size());
+    }
+>>>>>>> jpa-2
 }
